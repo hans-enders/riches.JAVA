@@ -1,0 +1,104 @@
+# This is a basic workflow to help you get started with Actions
+# This scans the Riches Application Release on FOD known as https://ams.fortify.com/Applications/118594
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build" where it both builds the code and then delivers the packaged code to FOD for a security scan.
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      # Java 8 required by ScanCentral Client and FoD Uploader (Univeral CI Tool)
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      # Runs a single command using the runners shell
+      #- name: Run a one-line script
+        #run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      #- name: Run a multi-line script
+        #run: |
+          #echo Add other actions to build,
+          #echo test, and deploy your project.
+      
+      # Prepare source+dependencies for upload. 
+      # Update PACKAGE_OPTS based on the ScanCentral Client documentation and your project's included tech stack(s).
+      #   ScanCentral Client will download dependencies for maven, gradle and msbuild projects.
+      #   For other build tools, add your build commands to the workflow to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
+      - name: Download Fortify ScanCentral Client
+        uses: fortify/gha-setup-scancentral-client@v1
+      - name: Package Code + Dependencies
+        run: scancentral package $PACKAGE_OPTS -o package.zip
+        env:
+          PACKAGE_OPTS: "-bt none"
+    
+      
+      # Start Fortify on Demand SAST scan and wait until results complete. Be sure to set secrets/variables for your FoD tenant.
+        # Following code copied 2021-05-13 from https://github.com/fortify/gha-sample-workflows-ssc-js-sandbox/actions/runs/635878295/workflow
+      - name: Download Fortify on Demand Universal CI Tool
+        uses: fortify/gha-setup-fod-uploader@v1
+      - name: Perform SAST Scan
+        run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+        env: 
+          FOD_TENANT: "franklinbank"
+          #FOD_TENANT: ${{ secrets.FOD_TENANT }}  
+          FOD_USER: "henders"
+          #FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          # Using the PAT "Hans-PAT-ALLSCOPES"
+          FOD_RELEASE_ID: "219788"
+          #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+            #e.g. 219788 for Riches.JAVA on franklinbank tenant
+          FOD_URL: "https://ams.fortify.com/"
+          #FOD_URL: ${{ secrets.FOD_URL }}
+            #e.g. https://ams.fortify.com/ - note trailing slash
+          FOD_API_URL: "https://api.ams.fortify.com/"
+          #FOD_API_URL: ${{ secrets.FOD_API_URL }}
+            #e.g. https://api.ams.fortify.com/ - note trailing slash
+          FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
+            #-I is polling interval
+          FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+
+# Once FOD scan completes, pull SAST issues from Fortify On Demand and generate SARIF output.
+      # Following code copied from https://github.com/marketplace/actions/export-fortify-vulnerability-data#fod-to-other-output-formats
+      # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
+      - name: Export Results
+        uses: fortify/gha-export-vulnerabilities@v1
+        with:
+          fod_base_url: "https://ams.fortify.com/"
+          #fod_base_url: ${{ secrets.FOD_BASE_URL }}
+          fod_tenant: "franklinbank"
+          #fod_tenant: ${{ secrets.FOD_TENANT }}
+          fod_user: "henders"
+          #fod_user: ${{ secrets.FOD_USER }}
+          fod_password: ${{ secrets.FOD_PAT }}
+          # Using the PAT "Hans-PAT-ALLSCOPES"
+          fod_release_id: "219788"
+          #fod_release_id: ${{ secrets.FOD_RELEASE_ID }}
+      
+      # Import Fortify SAST results to GitHub Security Code Scanning
+      - name: Import Results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ./gh-fortify-sast.sarif
