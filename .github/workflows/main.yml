@@ -71,7 +71,7 @@ jobs:
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: ${{ secrets.FOD_BASE_URL }}
+          fod_base_url: ${{ secrets.FOD_URL }}
           fod_tenant: ${{ secrets.FOD_TENANT }}
           fod_user: ${{ secrets.FOD_USER }}
           fod_password: ${{ secrets.FOD_PAT }}
