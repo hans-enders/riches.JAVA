@@ -60,11 +60,11 @@ jobs:
           #FOD_RELEASE_ID: "219788"
           FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
             #e.g. 219788 for Riches.JAVA on franklinbank tenant
-          FOD_URL: "https://ams.fortify.com/"
-          #FOD_URL: ${{ secrets.FOD_URL }}
+          #FOD_URL: "https://ams.fortify.com/"
+          FOD_URL: ${{ secrets.FOD_URL }}
             #e.g. https://ams.fortify.com/ - note trailing slash
-          FOD_API_URL: "https://api.ams.fortify.com/"
-          #FOD_API_URL: ${{ secrets.FOD_API_URL }}
+          #FOD_API_URL: "https://api.ams.fortify.com/"
+          FOD_API_URL: ${{ secrets.FOD_API_URL }}
             #e.g. https://api.ams.fortify.com/ - note trailing slash
           FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
             #-I is polling interval
