@@ -64,8 +64,11 @@ jobs:
           FOD_API_URL: ${{ secrets.FOD_API_URL }}
             #e.g. https://api.ams.fortify.com/ - note trailing slash
           FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
-            #-I is polling interval
-          FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+            # reference options - https://ams.fortify.com/Docs/en/index.htm#Tools/FoD_Uploader/BSI_Running.htm
+	    # -I is the polling interval - TODO - investigate FOD webhooks when come available...
+	  FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+
+# May consider next two code sections be moved to a 2nd Action, to follow this SAST Scan Action.
 
 # Once FOD scan completes, pull SAST issues from Fortify On Demand and generate SARIF output.
       # Following code copied from https://github.com/marketplace/actions/export-fortify-vulnerability-data#fod-to-other-output-formats
