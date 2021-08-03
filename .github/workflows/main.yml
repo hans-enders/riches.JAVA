@@ -51,7 +51,7 @@ jobs:
       - name: Perform SAST Scan
         run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
           # Next line is a comment reference, for using Alternative Credential methods - Reference  https://github.com/fod-dev/fod-uploader-java
-		      #run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -tc "$FOD_TENANT" -ac "$FOD_API_KEY" "$FOD_API_SECRET" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+	  # run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -tc "$FOD_TENANT" -ac "$FOD_API_KEY" "$FOD_API_SECRET" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
         env: 
           FOD_TENANT: ${{ secrets.FOD_TENANT }}  
           FOD_USER: ${{ secrets.FOD_USER }}
@@ -74,6 +74,7 @@ jobs:
       # Following code copied from https://github.com/marketplace/actions/export-fortify-vulnerability-data#fod-to-other-output-formats
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
+      
         uses: fortify/gha-export-vulnerabilities@v1
         with:
           fod_base_url: ${{ secrets.FOD_URL }}
