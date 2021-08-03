@@ -50,20 +50,17 @@ jobs:
         uses: fortify/gha-setup-fod-uploader@v1
       - name: Perform SAST Scan
         run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+          # Next line is a comment reference, for using Alternative Credential methods - Reference  https://github.com/fod-dev/fod-uploader-java
+		      #run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -tc "$FOD_TENANT" -ac "$FOD_API_KEY" "$FOD_API_SECRET" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
         env: 
-          #FOD_TENANT: "franklinbank"
           FOD_TENANT: ${{ secrets.FOD_TENANT }}  
-          #FOD_USER: "henders"
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
-          # Using the PAT "Hans-PAT-ALLSCOPES"
-          #FOD_RELEASE_ID: "219788"
+            # Using the PAT "Hans-PAT-ALLSCOPES"
           FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
             #e.g. 219788 for Riches.JAVA on franklinbank tenant
-          #FOD_URL: "https://ams.fortify.com/"
           FOD_URL: ${{ secrets.FOD_URL }}
             #e.g. https://ams.fortify.com/ - note trailing slash
-          #FOD_API_URL: "https://api.ams.fortify.com/"
           FOD_API_URL: ${{ secrets.FOD_API_URL }}
             #e.g. https://api.ams.fortify.com/ - note trailing slash
           FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
@@ -76,15 +73,12 @@ jobs:
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: "https://ams.fortify.com/"
-          #fod_base_url: ${{ secrets.FOD_BASE_URL }}
-          #fod_tenant: "franklinbank"
+          fod_base_url: ${{ secrets.FOD_URL }}
+              #e.g. https://ams.fortify.com/ - note trailing slash
           fod_tenant: ${{ secrets.FOD_TENANT }}
-          #fod_user: "henders"
           fod_user: ${{ secrets.FOD_USER }}
           fod_password: ${{ secrets.FOD_PAT }}
-          # Using the PAT "Hans-PAT-ALLSCOPES"
-          #fod_release_id: "219788"
+            # Using the PAT "Hans-PAT-ALLSCOPES"
           fod_release_id: ${{ secrets.FOD_RELEASE_ID }}
       
       # Import Fortify SAST results to GitHub Security Code Scanning
