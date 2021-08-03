@@ -66,24 +66,17 @@ jobs:
           FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
             # reference options - https://ams.fortify.com/Docs/en/index.htm#Tools/FoD_Uploader/BSI_Running.htm
 	    # -I is the polling interval - TODO - investigate FOD webhooks when come available...
-	  FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+	  #FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
-# May consider next two code sections be moved to a 2nd Action, to follow this SAST Scan Action.
-
-# Once FOD scan completes, pull SAST issues from Fortify On Demand and generate SARIF output.
-      # Following code copied from https://github.com/marketplace/actions/export-fortify-vulnerability-data#fod-to-other-output-formats
-      # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
-      
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: ${{ secrets.FOD_URL }}
-              #e.g. https://ams.fortify.com/ - note trailing slash
+          fod_base_url: ${{ secrets.FOD_BASE_URL }}
           fod_tenant: ${{ secrets.FOD_TENANT }}
           fod_user: ${{ secrets.FOD_USER }}
           fod_password: ${{ secrets.FOD_PAT }}
-            # Using the PAT "Hans-PAT-ALLSCOPES"
-          fod_release_id: ${{ secrets.FOD_RELEASE_ID }}
+                # Using the PAT "Hans-PAT-ALLSCOPES"
+          fod_release_id: ${{ secrets.FOD_RELEASE_ID }}      
       
       # Import Fortify SAST results to GitHub Security Code Scanning
       - name: Import Results
