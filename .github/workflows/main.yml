@@ -50,8 +50,8 @@ jobs:
         uses: fortify/gha-setup-fod-uploader@v1
       - name: Perform SAST Scan
         run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
-          # Next line is a comment reference, for using Alternative Credential methods - Reference  https://github.com/fod-dev/fod-uploader-java
-	  # run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -tc "$FOD_TENANT" -ac "$FOD_API_KEY" "$FOD_API_SECRET" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+        # Next line is a comment reference, for using Alternative Credential methods - Reference  https://github.com/fod-dev/fod-uploader-java
+	# run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -tc "$FOD_TENANT" -ac "$FOD_API_KEY" "$FOD_API_SECRET" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
         env: 
           FOD_TENANT: ${{ secrets.FOD_TENANT }}  
           FOD_USER: ${{ secrets.FOD_USER }}
@@ -66,7 +66,7 @@ jobs:
           FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
             # reference options - https://ams.fortify.com/Docs/en/index.htm#Tools/FoD_Uploader/BSI_Running.htm
 	    # -I is the polling interval - TODO - investigate FOD webhooks when come available...
-	  #FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+          FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
