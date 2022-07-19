@@ -58,6 +58,7 @@ jobs:
           FOD_PAT: ${{ secrets.FOD_PAT }}
             # Using the PAT "Hans-PAT-ALLSCOPES"
           FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+            #e.g. 463963 for riches.JAVA.JULY2022 on franklinbank tenant
             #e.g. 219788 for Riches.JAVA on franklinbank tenant
           FOD_URL: ${{ secrets.FOD_URL }}
             #e.g. https://ams.fortify.com/ - note trailing slash
